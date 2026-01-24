@@ -1,0 +1,216 @@
+{
+  "clientName": "Thunder Client",
+  "dateExported": "2024-01-24",
+  "version": "1.1",
+  "folders": [
+    {
+      "_id": "pizza-api-folder",
+      "name": "Pizza Ordering API",
+      "description": "BMAD Method Pizza Ordering System",
+      "requests": [
+        {
+          "_id": "root-endpoint",
+          "colId": "pizza-api-folder",
+          "name": "API Root Info",
+          "method": "GET",
+          "url": "http://localhost:5000/",
+          "description": "Get API information and available endpoints",
+          "headers": [],
+          "params": [],
+          "tests": [],
+          "responses": []
+        },
+        {
+          "_id": "get-menu",
+          "colId": "pizza-api-folder",
+          "name": "Get Pizza Menu",
+          "method": "GET",
+          "url": "http://localhost:5000/api/menu",
+          "description": "Retrieve all available pizzas with pricing",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "disabled": false
+            }
+          ],
+          "params": [],
+          "tests": [],
+          "responses": []
+        },
+        {
+          "_id": "get-all-orders",
+          "colId": "pizza-api-folder",
+          "name": "Get All Orders",
+          "method": "GET",
+          "url": "http://localhost:5000/api/orders",
+          "description": "Retrieve all placed orders",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "disabled": false
+            }
+          ],
+          "params": [],
+          "tests": [],
+          "responses": []
+        },
+        {
+          "_id": "create-order-single",
+          "colId": "pizza-api-folder",
+          "name": "Create Order - Single Margherita",
+          "method": "POST",
+          "url": "http://localhost:5000/api/orders",
+          "description": "Place a new order with one Margherita pizza",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "disabled": false
+            }
+          ],
+          "params": [],
+          "body": {
+            "type": "json",
+            "raw": "{\n  \"items\": [\n    {\n      \"pizzaId\": \"margherita\",\n      \"quantity\": 1,\n      \"size\": \"medium\",\n      \"customizations\": []\n    }\n  ],\n  \"customerName\": \"Bob Johnson\",\n  \"customerEmail\": \"bob@example.com\"\n}"
+          },
+          "tests": [],
+          "responses": []
+        },
+        {
+          "_id": "create-order-multiple",
+          "colId": "pizza-api-folder",
+          "name": "Create Order - Multiple Pizzas",
+          "method": "POST",
+          "url": "http://localhost:5000/api/orders",
+          "description": "Place an order with multiple pizzas and different sizes",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "disabled": false
+            }
+          ],
+          "params": [],
+          "body": {
+            "type": "json",
+            "raw": "{\n  \"items\": [\n    {\n      \"pizzaId\": \"margherita\",\n      \"quantity\": 2,\n      \"size\": \"large\",\n      \"customizations\": [\"extra-basil\"]\n    },\n    {\n      \"pizzaId\": \"pepperoni\",\n      \"quantity\": 1,\n      \"size\": \"medium\",\n      \"customizations\": [\"light-cheese\"]\n    },\n    {\n      \"pizzaId\": \"four-cheese\",\n      \"quantity\": 1,\n      \"size\": \"small\",\n      \"customizations\": []\n    }\n  ],\n  \"customerName\": \"Alice Smith\",\n  \"customerEmail\": \"alice@example.com\"\n}"
+          },
+          "tests": [],
+          "responses": []
+        },
+        {
+          "_id": "create-order-large",
+          "colId": "pizza-api-folder",
+          "name": "Create Order - Large Pizza Party",
+          "method": "POST",
+          "url": "http://localhost:5000/api/orders",
+          "description": "Place a larger order with party-size pizzas",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "disabled": false
+            }
+          ],
+          "params": [],
+          "body": {
+            "type": "json",
+            "raw": "{\n  \"items\": [\n    {\n      \"pizzaId\": \"vegetarian\",\n      \"quantity\": 3,\n      \"size\": \"large\",\n      \"customizations\": [\"extra-veggies\"]\n    },\n    {\n      \"pizzaId\": \"hawaiian\",\n      \"quantity\": 2,\n      \"size\": \"large\",\n      \"customizations\": []\n    }\n  ],\n  \"customerName\": \"Party Organizer\",\n  \"customerEmail\": \"party@example.com\"\n}"
+          },
+          "tests": [],
+          "responses": []
+        },
+        {
+          "_id": "create-order-invalid",
+          "colId": "pizza-api-folder",
+          "name": "Create Order - Missing Field (Error Test)",
+          "method": "POST",
+          "url": "http://localhost:5000/api/orders",
+          "description": "Test error handling - missing customerName",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "disabled": false
+            }
+          ],
+          "params": [],
+          "body": {
+            "type": "json",
+            "raw": "{\n  \"items\": [\n    {\n      \"pizzaId\": \"margherita\",\n      \"quantity\": 1,\n      \"size\": \"medium\",\n      \"customizations\": []\n    }\n  ],\n  \"customerEmail\": \"bob@example.com\"\n}"
+          },
+          "tests": [],
+          "responses": []
+        },
+        {
+          "_id": "delete-order",
+          "colId": "pizza-api-folder",
+          "name": "Delete Order - Template",
+          "method": "DELETE",
+          "url": "http://localhost:5000/api/orders/{order-id}",
+          "description": "Delete an order by ID. Replace {order-id} with actual order ID from Get All Orders response",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "disabled": false
+            }
+          ],
+          "params": [],
+          "tests": [],
+          "responses": []
+        },
+        {
+          "_id": "delete-order-example",
+          "colId": "pizza-api-folder",
+          "name": "Delete Order - Example",
+          "method": "DELETE",
+          "url": "http://localhost:5000/api/orders/abc12345",
+          "description": "Example delete request - replace 'abc12345' with an actual order ID from Get All Orders",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "disabled": false
+            }
+          ],
+          "params": [],
+          "tests": [],
+          "responses": []
+        },
+        {
+          "_id": "test-not-found",
+          "colId": "pizza-api-folder",
+          "name": "Test 404 - Invalid Endpoint",
+          "method": "GET",
+          "url": "http://localhost:5000/api/invalid",
+          "description": "Test error handling for non-existent endpoints",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/json",
+              "disabled": false
+            }
+          ],
+          "params": [],
+          "tests": [],
+          "responses": []
+        }
+      ]
+    }
+  ],
+  "variables": [
+    {
+      "name": "baseUrl",
+      "value": "http://localhost:5000",
+      "description": "Base URL for Pizza API"
+    },
+    {
+      "name": "orderId",
+      "value": "",
+      "description": "Current order ID for testing delete operations"
+    }
+  ]
+}

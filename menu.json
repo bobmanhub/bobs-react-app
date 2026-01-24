@@ -1,0 +1,44 @@
+{
+  "pizzas": [
+    {
+      "id": "margherita",
+      "name": "Margherita",
+      "description": "Classic pizza with tomato, mozzarella, and basil",
+      "basePrice": 10.99,
+      "image": "🍕",
+      "available": true
+    },
+    {
+      "id": "pepperoni",
+      "name": "Pepperoni",
+      "description": "Traditional pepperoni pizza with cheese",
+      "basePrice": 12.99,
+      "image": "🍕",
+      "available": true
+    },
+    {
+      "id": "vegetarian",
+      "name": "Vegetarian",
+      "description": "Fresh vegetables with mozzarella",
+      "basePrice": 11.99,
+      "image": "🍕",
+      "available": true
+    },
+    {
+      "id": "four-cheese",
+      "name": "Four Cheese",
+      "description": "Mozzarella, parmesan, gorgonzola, and ricotta",
+      "basePrice": 13.99,
+      "image": "🍕",
+      "available": true
+    },
+    {
+      "id": "hawaiian",
+      "name": "Hawaiian",
+      "description": "Ham and pineapple with mozzarella",
+      "basePrice": 12.99,
+      "image": "🍕",
+      "available": true
+    }
+  ]
+}
