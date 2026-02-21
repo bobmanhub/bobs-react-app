@@ -9,10 +9,20 @@ export interface Pizza {
   available: boolean;
 }
 
+export interface Drink {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  image: string;
+  available: boolean;
+}
+
 export interface OrderItem {
-  pizzaId: string;
+  pizzaId?: string;
+  drinkId?: string;
   quantity: number;
-  size: 'small' | 'medium' | 'large';
+  size?: 'small' | 'medium' | 'large';
   customizations: string[];
 }
 

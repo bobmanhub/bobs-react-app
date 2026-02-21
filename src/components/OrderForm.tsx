@@ -1,9 +1,10 @@
 import { useState } from "react";
-import type { OrderItem, Pizza } from "../types/pizza";
+import type { OrderItem, Pizza, Drink } from "../types/pizza";
 
 interface OrderFormProps {
   cartItems: OrderItem[];
   pizzaMap: { [key: string]: Pizza };
+  drinkMap: { [key: string]: Drink };
   onSubmit: (name: string, email: string) => void;
   loading: boolean;
 }
@@ -11,6 +12,7 @@ interface OrderFormProps {
 export function OrderForm({
   cartItems,
   pizzaMap,
+  drinkMap,
   onSubmit,
   loading,
 }: OrderFormProps) {
@@ -18,11 +20,19 @@ export function OrderForm({
   const [email, setEmail] = useState("");
 
   const totalPrice = cartItems.reduce((sum, item) => {
-    const pizza = pizzaMap[item.pizzaId];
-    if (pizza) {
-      const sizeMultiplier =
-        item.size === "small" ? 1 : item.size === "medium" ? 1.2 : 1.4;
-      return sum + pizza.basePrice * sizeMultiplier * item.quantity;
+    if (item.drinkId) {
+      const drink = drinkMap[item.drinkId];
+      if (drink) {
+        return sum + drink.price * item.quantity;
+      }
+    }
+    if (item.pizzaId) {
+      const pizza = pizzaMap[item.pizzaId];
+      if (pizza) {
+        const sizeMultiplier =
+          item.size === "small" ? 1 : item.size === "medium" ? 1.2 : 1.4;
+        return sum + pizza.basePrice * sizeMultiplier * item.quantity;
+      }
     }
     return sum;
   }, 0);
@@ -47,20 +57,29 @@ export function OrderForm({
             {cartItems.map((item, idx) => (
               <div key={idx} className="cart-item">
                 <span>
-                  {pizzaMap[item.pizzaId]?.name} ({item.size})
+                  {item.drinkId
+                    ? drinkMap[item.drinkId]?.name
+                    : item.pizzaId
+                      ? pizzaMap[item.pizzaId]?.name
+                      : "Unknown Item"}
+                  {item.size ? ` (${item.size})` : ""}
                 </span>
                 <span>x{item.quantity}</span>
                 <span>
                   $
-                  {(
-                    (pizzaMap[item.pizzaId]?.basePrice || 0) *
-                    (item.size === "small"
-                      ? 1
-                      : item.size === "medium"
-                        ? 1.2
-                        : 1.4) *
-                    item.quantity
-                  ).toFixed(2)}
+                  {item.drinkId
+                    ? ((drinkMap[item.drinkId]?.price || 0) * item.quantity).toFixed(2)
+                    : item.pizzaId
+                      ? (
+                          (pizzaMap[item.pizzaId]?.basePrice || 0) *
+                          (item.size === "small"
+                            ? 1
+                            : item.size === "medium"
+                              ? 1.2
+                              : 1.4) *
+                          item.quantity
+                        ).toFixed(2)
+                      : "0.00"}
                 </span>
               </div>
             ))}

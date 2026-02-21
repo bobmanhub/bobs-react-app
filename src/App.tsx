@@ -2,22 +2,30 @@ import { useState } from 'react';
 import './App.css'
 import { Blog } from './components/Blog'
 import { PizzaMenu } from './components/PizzaMenu'
+import { DrinkMenu } from './components/DrinkMenu'
 import { OrderForm } from './components/OrderForm'
 import { OrdersList } from './components/OrdersList'
-import type { OrderItem, Pizza } from './types/pizza'
+import type { OrderItem, Pizza, Drink } from './types/pizza'
 
 function App() {
   const [currentView, setCurrentView] = useState<'home' | 'pizza' | 'orders'>('home');
   const [cartItems, setCartItems] = useState<OrderItem[]>([]);
   const [pizzaMap, setPizzaMap] = useState<{ [key: string]: Pizza }>({});
+  const [drinkMap, setDrinkMap] = useState<{ [key: string]: Drink }>({});
   const [refreshOrders, setRefreshOrders] = useState(0);
   const [loading, setLoading] = useState(false);
 
   // Load pizza menu to build map
   const handleAddToCart = (pizza: Pizza, quantity: number, size: string) => {
     setPizzaMap(prev => ({ ...prev, [pizza.id]: pizza }));
-    setCartItems(prev => [...prev, { pizzaId: pizza.id, quantity, size, customizations: [] }]);
+    setCartItems(prev => [...prev, { pizzaId: pizza.id, quantity, size: size as 'small' | 'medium' | 'large', customizations: [] }]);
     alert(`${pizza.name} added to cart!`);
+  };
+
+  const handleAddDrinkToCart = (drink: Drink, quantity: number) => {
+    setDrinkMap(prev => ({ ...prev, [drink.id]: drink }));
+    setCartItems(prev => [...prev, { drinkId: drink.id, quantity, customizations: [] }]);
+    alert(`${drink.name} added to cart!`);
   };
 
   const handleSubmitOrder = async (name: string, email: string) => {
@@ -83,9 +91,11 @@ function App() {
         {currentView === 'pizza' && (
           <div className="pizza-view">
             <PizzaMenu onAddToCart={handleAddToCart} />
+            <DrinkMenu onAddToCart={handleAddDrinkToCart} />
             <OrderForm
               cartItems={cartItems}
               pizzaMap={pizzaMap}
+              drinkMap={drinkMap}
               onSubmit={handleSubmitOrder}
               loading={loading}
             />
