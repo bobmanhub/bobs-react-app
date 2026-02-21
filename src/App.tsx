@@ -1,112 +1,253 @@
-import { useState } from 'react';
-import './App.css'
-import { Blog } from './components/Blog'
-import { PizzaMenu } from './components/PizzaMenu'
-import { DrinkMenu } from './components/DrinkMenu'
-import { OrderForm } from './components/OrderForm'
-import { OrdersList } from './components/OrdersList'
-import type { OrderItem, Pizza, Drink } from './types/pizza'
+import { useState, useEffect } from 'react';
+import { ShoppingCart, Pizza as PizzaIcon, Package } from 'lucide-react';
+import { MenuCard } from './components/MenuCard';
+import { DrinkCard } from './components/DrinkCard';
+import { Cart } from './components/Cart';
+import { OrdersList } from './components/OrdersList';
+import { getMenu, getDrinks, getOrders, createOrder, deleteOrder, type Pizza, type Drink, type Order, type OrderItem } from './services/api';
+import { Toaster, toast } from 'sonner';
 
-function App() {
-  const [currentView, setCurrentView] = useState<'home' | 'pizza' | 'orders'>('home');
-  const [cartItems, setCartItems] = useState<OrderItem[]>([]);
-  const [pizzaMap, setPizzaMap] = useState<{ [key: string]: Pizza }>({});
-  const [drinkMap, setDrinkMap] = useState<{ [key: string]: Drink }>({});
-  const [refreshOrders, setRefreshOrders] = useState(0);
-  const [loading, setLoading] = useState(false);
+interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+}
 
-  // Load pizza menu to build map
-  const handleAddToCart = (pizza: Pizza, quantity: number, size: string) => {
-    setPizzaMap(prev => ({ ...prev, [pizza.id]: pizza }));
-    setCartItems(prev => [...prev, { pizzaId: pizza.id, quantity, size: size as 'small' | 'medium' | 'large', customizations: [] }]);
-    alert(`${pizza.name} added to cart!`);
-  };
+type View = 'menu' | 'drinks' | 'orders';
 
-  const handleAddDrinkToCart = (drink: Drink, quantity: number) => {
-    setDrinkMap(prev => ({ ...prev, [drink.id]: drink }));
-    setCartItems(prev => [...prev, { drinkId: drink.id, quantity, customizations: [] }]);
-    alert(`${drink.name} added to cart!`);
-  };
+export default function App() {
+  const [view, setView] = useState<View>('menu');
+  const [menu, setMenu] = useState<Pizza[]>([]);
+  const [drinks, setDrinks] = useState<Drink[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [showCart, setShowCart] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const handleSubmitOrder = async (name: string, email: string) => {
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
     setLoading(true);
     try {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/orders`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            items: cartItems,
-            customerName: name,
-            customerEmail: email
-          })
-        }
-      );
-      
-      if (response.ok) {
-        alert('Order placed successfully!');
-        setCartItems([]);
-        setRefreshOrders(prev => prev + 1);
-        setCurrentView('orders');
-      }
+      const [menuData, drinksData, ordersData] = await Promise.all([
+        getMenu(),
+        getDrinks(),
+        getOrders()
+      ]);
+      setMenu(menuData);
+      setDrinks(drinksData);
+      setOrders(ordersData);
     } catch (error) {
-      alert('Failed to place order');
+      toast.error('Failed to load data. Please try again.');
+      console.error('Error loading data:', error);
     } finally {
       setLoading(false);
     }
   };
 
+  const handleAddPizzaToCart = (pizza: Pizza) => {
+    setCart(prevCart => {
+      const existingItem = prevCart.find(item => item.id === pizza.id);
+      if (existingItem) {
+        return prevCart.map(item =>
+          item.id === pizza.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+      return [...prevCart, { id: pizza.id, name: pizza.name, price: pizza.price, quantity: 1 }];
+    });
+    toast.success(`${pizza.name} added to cart!`);
+  };
+
+  const handleAddDrinkToCart = (drink: Drink) => {
+    setCart(prevCart => {
+      const existingItem = prevCart.find(item => item.id === drink.id);
+      if (existingItem) {
+        return prevCart.map(item =>
+          item.id === drink.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      }
+      return [...prevCart, { id: drink.id, name: drink.name, price: drink.price, quantity: 1 }];
+    });
+    toast.success(`${drink.name} added to cart!`);
+  };
+
+  const handleUpdateQuantity = (id: string, quantity: number) => {
+    if (quantity <= 0) {
+      handleRemoveItem(id);
+      return;
+    }
+    setCart(prevCart =>
+      prevCart.map(item =>
+        item.id === id ? { ...item, quantity } : item
+      )
+    );
+  };
+
+  const handleRemoveItem = (id: string) => {
+    setCart(prevCart => prevCart.filter(item => item.id !== id));
+  };
+
+  const handleCheckout = async () => {
+    if (cart.length === 0) return;
+
+    try {
+      const orderItems: OrderItem[] = cart.map(item => ({
+        quantity: item.quantity,
+        name: item.name,
+        price: item.price
+      }));
+
+      const newOrder = await createOrder({ items: orderItems });
+      setOrders(prevOrders => [newOrder, ...prevOrders]);
+      setCart([]);
+      setShowCart(false);
+      toast.success('Order placed successfully!');
+      setView('orders');
+    } catch (error) {
+      toast.error('Failed to place order. Please try again.');
+      console.error('Error creating order:', error);
+    }
+  };
+
+  const handleDeleteOrder = async (orderId: string) => {
+    try {
+      await deleteOrder(orderId);
+      setOrders(prevOrders => prevOrders.filter(order => order.id !== orderId));
+      toast.success('Order cancelled successfully');
+    } catch (error) {
+      toast.error('Failed to cancel order. Please try again.');
+      console.error('Error deleting order:', error);
+    }
+  };
+
+  const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+
   return (
-    <div className="App">
-      <div className="navbar">
-        <h1>🍕 Bob's Pizza Shop</h1>
-        <ul>
-          <li><button onClick={() => setCurrentView('home')} className={currentView === 'home' ? 'active' : ''}>Home</button></li>
-          <li><button onClick={() => setCurrentView('pizza')} className={currentView === 'pizza' ? 'active' : ''}>Order Pizza</button></li>
-          <li><button onClick={() => setCurrentView('orders')} className={currentView === 'orders' ? 'active' : ''}>Orders</button></li>
-        </ul>
-      </div>
-
-      <main className="content">
-        {currentView === 'home' && (
-          <div className="home-view">
-            <h2>Welcome to Bob's Pizza Ordering System</h2>
-            <p>Built with BMAD Method - Breakthrough Method of Agile AI-Driven Development</p>
-            <div className="features">
-              <div className="feature">
-                <span>🎯</span> Fast API design with AI-driven architecture
-              </div>
-              <div className="feature">
-                <span>⚡</span> Agile development with rapid iterations
-              </div>
-              <div className="feature">
-                <span>📦</span> Full-stack integration from menu to orders
-              </div>
+    <div className="min-h-screen bg-gray-50">
+      <Toaster position="top-right" />
+      
+      <header className="bg-white shadow-sm sticky top-0 z-40">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <PizzaIcon className="w-8 h-8 text-orange-500" />
+              <h1 className="text-2xl font-bold text-gray-900">Pizza Palace</h1>
             </div>
-            <Blog />
+            
+            <nav className="flex items-center gap-4">
+              <button
+                onClick={() => setView('menu')}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  view === 'menu'
+                    ? 'bg-orange-500 text-white'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                Pizzas
+              </button>
+              <button
+                onClick={() => setView('drinks')}
+                className={`px-4 py-2 rounded-lg transition-colors ${
+                  view === 'drinks'
+                    ? 'bg-orange-500 text-white'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                Drinks
+              </button>
+              <button
+                onClick={() => setView('orders')}
+                className={`px-4 py-2 rounded-lg transition-colors flex items-center gap-2 ${
+                  view === 'orders'
+                    ? 'bg-orange-500 text-white'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                <Package className="w-4 h-4" />
+                Orders
+              </button>
+              <button
+                onClick={() => setShowCart(true)}
+                className="relative bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                Cart
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold">
+                    {cartItemCount}
+                  </span>
+                )}
+              </button>
+            </nav>
           </div>
-        )}
+        </div>
+      </header>
 
-        {currentView === 'pizza' && (
-          <div className="pizza-view">
-            <PizzaMenu onAddToCart={handleAddToCart} />
-            <DrinkMenu onAddToCart={handleAddDrinkToCart} />
-            <OrderForm
-              cartItems={cartItems}
-              pizzaMap={pizzaMap}
-              drinkMap={drinkMap}
-              onSubmit={handleSubmitOrder}
-              loading={loading}
-            />
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500"></div>
+            <p className="mt-4 text-gray-600">Loading...</p>
           </div>
-        )}
-
-        {currentView === 'orders' && (
-          <OrdersList refreshTrigger={refreshOrders} />
+        ) : view === 'menu' ? (
+          <div>
+            <div className="mb-6">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">Our Pizzas</h2>
+              <p className="text-gray-600">Choose from our delicious selection of pizzas</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {menu.map(pizza => (
+                <MenuCard
+                  key={pizza.id}
+                  pizza={pizza}
+                  onAddToCart={handleAddPizzaToCart}
+                />
+              ))}
+            </div>
+          </div>
+        ) : view === 'drinks' ? (
+          <div>
+            <div className="mb-6">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">Our Drinks</h2>
+              <p className="text-gray-600">Refreshing beverages to complement your pizza</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {drinks.map(drink => (
+                <DrinkCard
+                  key={drink.id}
+                  drink={drink}
+                  onAddToCart={handleAddDrinkToCart}
+                />
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div>
+            <div className="mb-6">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">Your Orders</h2>
+              <p className="text-gray-600">Track and manage your pizza orders</p>
+            </div>
+            <OrdersList orders={orders} onDeleteOrder={handleDeleteOrder} />
+          </div>
         )}
       </main>
+
+      {showCart && (
+        <Cart
+          items={cart}
+          onUpdateQuantity={handleUpdateQuantity}
+          onRemoveItem={handleRemoveItem}
+          onCheckout={handleCheckout}
+          onClose={() => setShowCart(false)}
+        />
+      )}
     </div>
-  )
+  );
 }
-export default App
