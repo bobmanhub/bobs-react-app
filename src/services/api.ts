@@ -117,6 +117,15 @@ let mockOrders: Order[] = [
     total: 25.98,
     status: 'preparing',
     createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString()
+  },
+  {
+    id: 'order-2',
+    items: [
+      { pizzaId: '2', drinkId: '1', size: 'medium', quantity: 1, name: 'Pepperoni', price: 14.99 }
+    ],
+    total: 14.99,
+    status: 'preparing',
+    createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString()
   }
 ];
 
