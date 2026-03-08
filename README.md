@@ -1,4 +1,4 @@
-# Bob's Pizza Ordering Website
+# Robert's Pizza Ordering API
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
