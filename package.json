@@ -10,9 +10,11 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "server": "cross-env PORT=5000 node server.js",
-    "start": "PORT=5000 node server.js"
+    "start": "PORT=5000 node server.js",
+    "mcp": "node mcp-server.js"
   },
   "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.1",
     "lucide-react": "^0.487.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

@@ -40,5 +40,31 @@
       "image": "🍕",
       "available": true
     }
+  ],
+  "drinks": [
+    {
+      "id": "cola",
+      "name": "Cola",
+      "description": "Cold refreshing cola drink",
+      "basePrice": 2.99,
+      "image": "🥤",
+      "available": true
+    },
+    {
+      "id": "sprite",
+      "name": "Sprite",
+      "description": "Crisp lemon-lime soda",
+      "basePrice": 2.99,
+      "image": "🥤",
+      "available": true
+    },
+    {
+      "id": "water",
+      "name": "Water",
+      "description": "Bottled water",
+      "basePrice": 1.99,
+      "image": "💧",
+      "available": true
+    }
   ]
 }

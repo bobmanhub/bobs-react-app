@@ -155,9 +155,8 @@ const server = http.createServer(async (req, res) => {
   }
 
   // DELETE /api/orders/:id - Delete an order
-  const deleteMatch = req.url.match(/^\/api\/orders\/([a-z0-9]+)$/) && req.method === "DELETE";
-  if (deleteMatch) {
-    const orderId = deleteMatch[1];
+  if (req.method === "DELETE" && req.url.match(/^\/api\/orders\/([a-z0-9]+)$/)) {
+    const orderId = req.url.match(/^\/api\/orders\/([a-z0-9]+)$/)[1];
     const index = orders.findIndex((o) => o.id === orderId);
 
     if (index === -1) {
