@@ -1,5 +1,10 @@
 # How to Run MCP Server with Claude
 
+First, after cloning the repo locally, install NPM dependencies
+
+```
+npm i
+```
 
 ![[claude-settings.png]]
 
