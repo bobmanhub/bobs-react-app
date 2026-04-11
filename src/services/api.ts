@@ -20,6 +20,7 @@ export interface Drink {
 export interface OrderItem {
   pizzaId?: string;
   drinkId?: string;
+  size?: string;
   quantity: number;
   name: string;
   price: number;
