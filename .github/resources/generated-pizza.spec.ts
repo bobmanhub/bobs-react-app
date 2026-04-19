@@ -1,9 +1,10 @@
 import { test, expect } from '@playwright/test';
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5173/bobs-react-app';
+const BASE_URL = process.env.BASE_URL || 'http://localhost:5173/bobs-react-app/';
 
 test('Scenario: Add pizza to cart', async ({ page }) => {
   await page.goto(BASE_URL);
+  await page.waitForLoadState('domcontentloaded'); 
   await page.waitForLoadState('networkidle');
   
   // When I click "Pizzas"

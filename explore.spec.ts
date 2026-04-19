@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 test('explore pizza ordering flow', async ({ page }) => {
-  await page.goto('http://localhost:5173/bobs-react-app/');
+  await page.goto('/');
   await page.waitForLoadState('networkidle');
 
   console.log('=== PAGE LOADED ===');
