@@ -109,7 +109,7 @@ export default function App() {
       setCart([]);
       setShowCart(false);
       toast.success('Order placed successfully!');
-      setView('orders');
+//      setView('orders');
     } catch (error) {
       toast.error('Failed to place order. Please try again.');
       console.error('Error creating order:', error);
