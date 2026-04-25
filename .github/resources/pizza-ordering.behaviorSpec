@@ -1,0 +1,26 @@
+Feature: Pizza Ordering Flow
+
+  Scenario: Add pizza to cart
+    Given the app and API are running
+    When I click "Pizzas"
+    And I click "Add to Cart" on "Margherita"
+    Then cart badge shows "1"
+
+  Scenario: Open cart and view items
+    Given cart has 1 item
+    When I click "Cart"
+    Then cart drawer opens
+    And I see "Margherita" in cart
+
+  Scenario: Place order
+    Given cart has 1 item
+    When I click "Cart"
+    And I click "Place Order"
+    Then I am on the "Orders" page
+    And I see the order in list
+
+  Scenario: View orders list
+    Given I have placed orders
+    When I click "Orders"
+    Then I see all my orders
+    And each order shows status

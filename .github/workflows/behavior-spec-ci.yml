@@ -1,0 +1,53 @@
+name: Behavior Spec Tests
+
+on:
+  pull_request:
+    paths: 
+      - '.github/**/*.spec.ts'
+      - 'src/**/*.spec.ts'
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Install dependencies
+        run: npm install
+      
+      - name: Start API server
+        run: |
+          node server.js &
+          echo "API_PID=$!" >> $GITHUB_ENV
+        env:
+          API_URL: http://localhost:5000
+          PORT: 5000
+      
+      - name: Start Vite dev server
+        run: |
+          npm run dev &
+          echo "VITE_PID=$!" >> $GITHUB_ENV
+      
+      - name: Wait for servers
+        run: sleep 8
+      
+      - name: Run Playwright tests
+        run: npx playwright test --reporter=line
+      
+      - name: Create GitHub Issue on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: '[CI] Playwright Test Failure',
+              body: 'Behavior spec tests failed. Check CI logs for details.'
+            })
