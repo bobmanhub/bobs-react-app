@@ -37,6 +37,9 @@ jobs:
       - name: Wait for servers
         run: sleep 8
       
+      - name: Install Playwright
+        run: npx playwright install --reporter=line
+
       - name: Run Playwright tests
         run: npx playwright test --reporter=line
       
