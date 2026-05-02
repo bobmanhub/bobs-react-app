@@ -38,7 +38,7 @@ jobs:
         run: sleep 8
       
       - name: Install Playwright
-        run: npx playwright install --reporter=line
+        run: npx playwright install
 
       - name: Run Playwright tests
         run: npx playwright test --reporter=line
