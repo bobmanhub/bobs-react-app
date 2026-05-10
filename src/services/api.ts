@@ -1,20 +1,27 @@
-// Mock API service for pizza and drink ordering
+// Pizza and drink ordering API service
+// Connects to Cloud Run API: https://pizza-api-331610961275.us-central1.run.app
+
+const API_BASE_URL = 'https://pizza-api-331610961275.us-central1.run.app';
 
 export interface Pizza {
   id: string;
   name: string;
   description: string;
-  price: number;
+  basePrice: number;
+  price?: number; // For compatibility
   image: string;
-  category: string;
+  category?: string;
+  available?: boolean;
 }
 
 export interface Drink {
   id: string;
   name: string;
   description: string;
-  price: number;
+  basePrice: number;
+  price?: number; // For compatibility
   image: string;
+  available?: boolean;
 }
 
 export interface OrderItem {
@@ -34,133 +41,99 @@ export interface Order {
   createdAt: string;
 }
 
-const mockPizzaData: Pizza[] = [
-  {
-    id: '1',
-    name: 'Margherita',
-    description: 'Fresh mozzarella, tomato sauce, basil',
-    price: 12.99,
-    image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400&h=300&fit=crop',
-    category: 'Classic'
-  },
-  {
-    id: '2',
-    name: 'Pepperoni',
-    description: 'Pepperoni, mozzarella, tomato sauce',
-    price: 14.99,
-    image: 'https://images.unsplash.com/photo-1628840042765-356cda07504e?w=400&h=300&fit=crop',
-    category: 'Classic'
-  },
-  {
-    id: '3',
-    name: 'Hawaiian',
-    description: 'Ham, pineapple, mozzarella, tomato sauce',
-    price: 15.99,
-    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=400&h=300&fit=crop',
-    category: 'Specialty'
-  },
-  {
-    id: '4',
-    name: 'Quattro Formaggi',
-    description: 'Four cheese blend, white sauce',
-    price: 16.99,
-    image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400&h=300&fit=crop',
-    category: 'Specialty'
-  },
-  {
-    id: '5',
-    name: 'Vegetarian',
-    description: 'Bell peppers, mushrooms, onions, olives',
-    price: 13.99,
-    image: 'https://images.unsplash.com/photo-1511689660979-10d2b1aada49?w=400&h=300&fit=crop',
-    category: 'Veggie'
-  },
-  {
-    id: '6',
-    name: 'Meat Lovers',
-    description: 'Pepperoni, sausage, bacon, ham',
-    price: 17.99,
-    image: 'https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=400&h=300&fit=crop',
-    category: 'Specialty'
-  }
-];
-
-const mockDrinkData: Drink[] = [
-  {
-    id: 'cola',
-    name: 'Cola',
-    description: 'Refreshing cola beverage',
-    price: 2.50,
-    image: '🥤'
-  },
-  {
-    id: 'ice-tea',
-    name: 'Ice Tea',
-    description: 'Refreshing iced tea',
-    price: 2.50,
-    image: '🧋'
-  },
-  {
-    id: 'water',
-    name: 'Water',
-    description: 'Bottled water',
-    price: 1.50,
-    image: '💧'
-  }
-];
-
-let mockOrders: Order[] = [
-  {
-    id: 'order-1',
-    items: [
-      { pizzaId: '1', quantity: 2, name: 'Margherita', price: 12.99 }
-    ],
-    total: 25.98,
-    status: 'preparing',
-    createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString()
-  },
-  {
-    id: 'order-2',
-    items: [
-      { pizzaId: '2', drinkId: '1', size: 'medium', quantity: 1, name: 'Pepperoni', price: 14.99 }
-    ],
-    total: 14.99,
-    status: 'preparing',
-    createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString()
-  }
-];
+// Cache for menu data
+let cachedMenu: { pizzas?: Pizza[]; drinks?: Drink[] } = {};
 
 export async function getMenu(): Promise<Pizza[]> {
-  await new Promise(resolve => setTimeout(resolve, 500));
-  return mockPizzaData;
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/menu`);
+    if (!response.ok) {
+      throw new Error(`Menu API error: ${response.status}`);
+    }
+    const data = await response.json();
+    cachedMenu = data;
+    // Convert basePrice to price for compatibility
+    return (data.pizzas || []).map((pizza: Pizza) => ({
+      ...pizza,
+      price: pizza.basePrice,
+      category: pizza.category || 'Classic'
+    }));
+  } catch (error) {
+    console.error('Failed to fetch menu:', error);
+    return [];
+  }
 }
 
 export async function getDrinks(): Promise<Drink[]> {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  return mockDrinkData;
+  try {
+    // If we already have cached drinks from getMenu, use them
+    if (cachedMenu.drinks) {
+      return cachedMenu.drinks.map((drink: Drink) => ({
+        ...drink,
+        price: drink.basePrice
+      }));
+    }
+    
+    // Otherwise fetch menu which includes drinks
+    const response = await fetch(`${API_BASE_URL}/api/menu`);
+    if (!response.ok) {
+      throw new Error(`Menu API error: ${response.status}`);
+    }
+    const data = await response.json();
+    cachedMenu = data;
+    return (data.drinks || []).map((drink: Drink) => ({
+      ...drink,
+      price: drink.basePrice
+    }));
+  } catch (error) {
+    console.error('Failed to fetch drinks:', error);
+    return [];
+  }
 }
 
 export async function getOrders(): Promise<Order[]> {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  return mockOrders;
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/orders`);
+    if (!response.ok) {
+      throw new Error(`Orders API error: ${response.status}`);
+    }
+    const data = await response.json();
+    return data.orders || [];
+  } catch (error) {
+    console.error('Failed to fetch orders:', error);
+    return [];
+  }
 }
 
 export async function createOrder(orderData: { items: OrderItem[] }): Promise<Order> {
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  const newOrder: Order = {
-    id: `order-${Date.now()}`,
-    items: orderData.items,
-    total: orderData.items.reduce((sum, item) => sum + (item.price * item.quantity), 0),
-    status: 'preparing',
-    createdAt: new Date().toISOString()
-  };
-  
-  mockOrders = [newOrder, ...mockOrders];
-  return newOrder;
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/orders`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(orderData)
+    });
+    if (!response.ok) {
+      throw new Error(`Create order API error: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Failed to create order:', error);
+    throw error;
+  }
 }
 
 export async function deleteOrder(orderId: string): Promise<void> {
-  await new Promise(resolve => setTimeout(resolve, 300));
-  mockOrders = mockOrders.filter(order => order.id !== orderId);
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/orders/${orderId}`, {
+      method: 'DELETE'
+    });
+    if (!response.ok) {
+      throw new Error(`Delete order API error: ${response.status}`);
+    }
+  } catch (error) {
+    console.error('Failed to delete order:', error);
+    throw error;
+  }
 }

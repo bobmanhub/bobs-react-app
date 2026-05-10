@@ -1,0 +1,15 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install pnpm
+RUN npm install -g pnpm
+
+COPY package.json pnpm-lock.yaml* ./
+RUN pnpm install --prod
+
+COPY server.js menu.json ./
+
+EXPOSE 8080
+
+CMD ["pnpm", "start"]
