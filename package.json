@@ -11,7 +11,7 @@
     "test": "vitest --run",
     "preview": "vite preview",
     "server": "cross-env PORT=5000 node server.js",
-    "start": "PORT=5000 node server.js",
+    "start": "node server.js",
     "mcp": "node mcp-server.js"
   },
   "dependencies": {

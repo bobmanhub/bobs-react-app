@@ -178,9 +178,9 @@ const server = http.createServer(async (req, res) => {
   res.end(JSON.stringify({ message: "Endpoint not found" }));
 });
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 8080;
 
-server.listen(PORT, () => {
+server.listen(PORT, "0.0.0.0", () => {
   console.log(`🍕 Pizza API server running on port ${PORT}`);
   console.log(`📍 http://localhost:${PORT}`);
 });
