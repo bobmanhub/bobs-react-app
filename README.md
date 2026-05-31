@@ -1,5 +1,29 @@
 # Robert's Pizza Ordering API
 
+## Running the Music Catalog Editor (dev:all)
+
+The Music Catalog Editor requires two servers running simultaneously in separate terminals:
+
+**Terminal 1 — Express AI service (port 3001):**
+```bash
+npm run ai-server
+```
+
+**Terminal 2 — Vite dev server (port 5173):**
+```bash
+npm run dev
+```
+
+Before starting, copy `.env.example` to `.env` and fill in your `OPENAI_API_KEY`:
+```bash
+cp .env.example .env
+# then edit .env and set OPENAI_API_KEY=<your key>
+```
+
+Open `http://localhost:5173` in your browser once both servers are running.
+
+---
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:

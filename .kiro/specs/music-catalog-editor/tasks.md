@@ -12,7 +12,7 @@ Build a React 19 + TypeScript + Vite 7 + Tailwind CSS 3 single-page application 
 
 ## Tasks
 
-- [ ] 1. Project setup — dependencies, environment files, and server scaffold
+- [x] 1. Project setup — dependencies, environment files, and server scaffold
   - Install new runtime dependencies: `express`, `openai`, `cors`, `dotenv`
     - Run: `npm install express openai cors dotenv`
   - Install new dev dependencies: `fast-check`, `@types/express`, `@types/cors`
@@ -34,8 +34,8 @@ Build a React 19 + TypeScript + Vite 7 + Tailwind CSS 3 single-page application 
   - Add a `"dev:all"` note in `README.md` explaining that developers must run `npm run dev` (Vite, port 5173) and `npm run ai-server` (Express, port 3001) in two separate terminals
   - _Requirements: 10.1, 10.2, 10.3, 10.5_
 
-- [ ] 2. Core TypeScript types and pure validation functions
-  - [~] 2.1 Create `src/catalog/types.ts` with all shared interfaces and enums
+- [x] 2. Core TypeScript types and pure validation functions
+  - [x] 2.1 Create `src/catalog/types.ts` with all shared interfaces and enums
     - Export `Album`, `Track`, `CatalogState`, `UndoEntry`, `ChatMessage`, `GifEmbed`, `PersistedCatalog` interfaces exactly as specified in the design document
     - Export `EditionType` and `ExplicitFlag` union types
     - Export `MUSIC_GENRES` and `MOOD_DESCRIPTORS` constant arrays
@@ -43,7 +43,7 @@ Build a React 19 + TypeScript + Vite 7 + Tailwind CSS 3 single-page application 
     - Export `EXPLICIT_FLAGS` constant array: `['Clean', 'Explicit']`
     - _Requirements: 1.7, 1.8, 1.9, 2.6, 2.7, 2.8_
 
-  - [~] 2.2 Create `src/catalog/validation.ts` with all pure validation functions
+  - [x] 2.2 Create `src/catalog/validation.ts` with all pure validation functions
     - Implement and export: `validateRequired`, `validatePositiveInteger`, `validatePositiveNumber`, `validateAIGenerationRatio`, `validateISRC`, `validateAlbumNameRef`, `validateCatalogNumberUnique`
     - Each function signature: `(value: string, ...context) => string | null` — returns `null` on valid, error message string on invalid
     - No side effects; no imports from React or browser APIs
@@ -59,8 +59,8 @@ Build a React 19 + TypeScript + Vite 7 + Tailwind CSS 3 single-page application 
     - **Property 5: ISRC validation accepts well-formed codes and rejects malformed ones** — Validates: Requirements 2.11
     - **Property 9: Required-field validation rejects empty/whitespace values** — Validates: Requirements 3.5, 5.3
 
-- [ ] 3. Catalog reducer and context
-  - [~] 3.1 Create `src/catalog/reducer.ts` with the `catalogReducer` pure function
+- [x] 3. Catalog reducer and context
+  - [x] 3.1 Create `src/catalog/reducer.ts` with the `catalogReducer` pure function
     - Handle actions: `SET_CELL`, `ADD_ALBUM`, `ADD_TRACK`, `DELETE_ALBUM`, `DELETE_TRACK`, `BULK_REASSIGN`, `UNDO`, `LOAD_CATALOG`, `SET_ACTIVE_ALBUM`, `SET_ACTIVE_TRACK`, `SET_SELECTED_TRACKS`, `SET_SPLIT_RATIO`
     - `SET_CELL` pushes an `UndoEntry` onto `undoStack` (cap at 50 entries) before applying the new value
     - `UNDO` pops the top `UndoEntry` and restores `previousValue` without re-running validation
@@ -69,13 +69,13 @@ Build a React 19 + TypeScript + Vite 7 + Tailwind CSS 3 single-page application 
     - All state mutations return new objects (immutable updates)
     - _Requirements: 1.6, 3.3, 4.2, 4.3, 4.4, 6.4_
 
-  - [~] 3.2 Create `src/catalog/mockData.ts` with pre-loaded sample records
+  - [x] 3.2 Create `src/catalog/mockData.ts` with pre-loaded sample records
     - Export `MOCK_ALBUMS: Album[]` — 3 records: Nevermind (Nirvana, DGC Records, 1991-09-24, DGC-24425, Standard, Rock, Energetic), Kind of Blue (Miles Davis, Columbia Records, 1959-08-17, CL-1355, Standard, Jazz, Calm), Thriller (Michael Jackson, Epic Records, 1982-11-30, QE-38112, Standard, Pop, Energetic)
     - Export `MOCK_TRACKS: Track[]` — 5 records: "Smells Like Teen Spirit" (Nirvana/Nevermind, US-DGC-91-00001), "Come as You Are" (Nirvana/Nevermind, US-DGC-91-00002), "So What" (Miles Davis/Kind of Blue, US-COL-59-00001), "Blue in Green" (Miles Davis/Kind of Blue, US-COL-59-00002), "Billie Jean" (Michael Jackson/Thriller, US-EPC-82-00001)
     - All required fields populated with realistic values; optional fields may be empty strings
     - _Requirements: 8.1, 8.2, 8.3, 8.4_
 
-  - [~] 3.3 Create `src/catalog/persistence.ts` with localStorage and JSON serialization helpers
+  - [x] 3.3 Create `src/catalog/persistence.ts` with localStorage and JSON serialization helpers
     - Export `saveCatalogToStorage(albums, tracks): void` — serializes to `localStorage` key `"music-catalog-editor"` with `version: 1`
     - Export `loadCatalogFromStorage(): PersistedCatalog | null` — returns `null` if key absent or parse fails
     - Export `saveSplitRatioToStorage(ratio: number): void` and `loadSplitRatioFromStorage(): number | null`
@@ -83,7 +83,7 @@ Build a React 19 + TypeScript + Vite 7 + Tailwind CSS 3 single-page application 
     - Export `importCatalogFromJSON(json: string): { data: PersistedCatalog } | { error: string }` — validates schema before returning; returns error string on failure without throwing
     - _Requirements: 11.1, 11.2, 11.3, 11.4, 11.5_
 
-  - [~] 3.4 Create `src/catalog/CatalogContext.tsx` wiring reducer, persistence, and mock data
+  - [x] 3.4 Create `src/catalog/CatalogContext.tsx` wiring reducer, persistence, and mock data
     - Create `CatalogContext` and `CatalogProvider` component
     - On mount: load from `localStorage`; if absent, load mock data and set first album as active row (Req 8.5)
     - After every `SET_CELL`, `ADD_ALBUM`, `ADD_TRACK`, `DELETE_ALBUM`, `DELETE_TRACK`, `BULK_REASSIGN` dispatch: call `saveCatalogToStorage`
@@ -106,12 +106,12 @@ Build a React 19 + TypeScript + Vite 7 + Tailwind CSS 3 single-page application 
     - **Property 14: JSON export/import round-trip preserves catalog** — Validates: Requirements 11.4
     - **Property 15: Invalid JSON import leaves catalog unchanged** — Validates: Requirements 11.5
 
-- [~] 4. Checkpoint — run tests before building UI
+- [-] 4. Checkpoint — run tests before building UI
   - Run `npm test` and confirm all property and unit tests pass before proceeding to UI components.
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 5. Core UI primitives — EditableCell and SplitPane
-  - [~] 5.1 Create `src/components/EditableCell.tsx`
+  - [-] 5.1 Create `src/components/EditableCell.tsx`
     - Implement the `EditableCellProps` interface from the design document
     - `type="text"`: renders a plain `<input>` when `isActive`, otherwise a `<span>`
     - `type="number"`: same as text but `inputMode="numeric"`
@@ -121,7 +121,7 @@ Build a React 19 + TypeScript + Vite 7 + Tailwind CSS 3 single-page application 
     - Accessible: `aria-label` includes field name; error message has `role="alert"`
     - _Requirements: 1.2, 1.3, 1.4, 1.6, 1.10, 2.3, 2.9, 2.10, 2.11_
 
-  - [~] 5.2 Create `src/components/SplitPane.tsx`
+  - [-] 5.2 Create `src/components/SplitPane.tsx`
     - Implement the `SplitPaneProps` interface from the design document
     - Renders top and bottom panes separated by a draggable `<div>` divider
     - On mouse drag: update `ratio` in local state and call `onRatioChange`
@@ -194,14 +194,14 @@ Build a React 19 + TypeScript + Vite 7 + Tailwind CSS 3 single-page application 
   - _Requirements: 6.2, 6.3, 6.4, 6.5_
 
 - [ ] 10. ChatPanel and AI_Service integration
-  - [~] 10.1 Create `src/services/aiService.ts` — client-side fetch wrapper
+  - [-] 10.1 Create `src/services/aiService.ts` — client-side fetch wrapper
     - Export `sendChatMessage(messages, catalogContext): Promise<{ reply: string; triggerGif: boolean; gifQuery: string | null }>` — POSTs to `http://localhost:3001/api/chat`
     - Export `fetchGif(query: string): Promise<{ url: string; title: string }>` — GETs `http://localhost:3001/api/gif?q={query}`
     - On non-2xx response: throw an error with the server's `error` field as the message
     - Never includes any API key in the request body or headers (Req 10.2)
     - _Requirements: 9.3, 9.4, 9.8, 10.2_
 
-  - [~] 10.2 Implement `ai-server.js` `POST /api/chat` handler fully
+  - [-] 10.2 Implement `ai-server.js` `POST /api/chat` handler fully
     - Build the system prompt from a template that includes: assistant personality (friendly, music-savvy), full Album and Track field schema with types and valid values, and instructions to set `triggerGif: true` when a contextually appropriate moment occurs (completing an album, referencing a famous artist)
     - Forward `messages` array and `catalogContext` to OpenAI `gpt-4o-mini` (or `gpt-3.5-turbo` as fallback)
     - Parse the OpenAI response; determine `triggerGif` and `gifQuery` from response content
@@ -209,7 +209,7 @@ Build a React 19 + TypeScript + Vite 7 + Tailwind CSS 3 single-page application 
     - Reject requests containing `openaiApiKey` in body with HTTP 400 (Req 10.5)
     - _Requirements: 9.3, 9.4, 9.5, 9.6, 10.1, 10.5_
 
-  - [~] 10.3 Implement `ai-server.js` `GET /api/gif` handler
+  - [-] 10.3 Implement `ai-server.js` `GET /api/gif` handler
     - Define a hardcoded array of at least 12 curated public music-related GIF URLs (use publicly accessible, royalty-free animated GIFs — e.g., from Wikimedia Commons or similar public domain sources — each tagged with genre/mood keywords)
     - Filter by query keyword match against tags; return a random match, or a random entry from the full list if no match
     - Return `{ url, title }` — no external API key required
