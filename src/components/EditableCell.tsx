@@ -5,7 +5,7 @@ interface EditableCellProps {
   fieldName: string;
   rowId: string;
   type: 'text' | 'dropdown' | 'number';
-  options?: string[];
+  options?: readonly string[];
   validate?: (v: string) => string | null;
   onCommit: (rowId: string, field: string, value: string) => void;
   isActive: boolean;

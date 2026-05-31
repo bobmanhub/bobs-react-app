@@ -64,7 +64,7 @@ export function catalogReducer(
         const albumIndex = state.albums.findIndex((a) => a.id === entityId);
         if (albumIndex === -1) return state;
 
-        const previousValue = (state.albums[albumIndex] as Record<string, string>)[field] ?? '';
+        const previousValue = ((state.albums[albumIndex] as unknown) as Record<string, string>)[field] ?? '';
 
         const undoEntry: UndoEntry = {
           type: 'cell_edit',
@@ -96,7 +96,7 @@ export function catalogReducer(
         const trackIndex = state.tracks.findIndex((t) => t.id === entityId);
         if (trackIndex === -1) return state;
 
-        const previousValue = (state.tracks[trackIndex] as Record<string, string>)[field] ?? '';
+        const previousValue = ((state.tracks[trackIndex] as unknown) as Record<string, string>)[field] ?? '';
 
         const undoEntry: UndoEntry = {
           type: 'cell_edit',

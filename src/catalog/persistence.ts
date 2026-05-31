@@ -1,4 +1,4 @@
-import { Album, Track, PersistedCatalog } from './types';
+import type { Album, Track, PersistedCatalog } from './types';
 
 const CATALOG_KEY = 'music-catalog-editor';
 const SPLIT_KEY = 'music-catalog-editor-split';

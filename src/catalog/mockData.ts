@@ -1,4 +1,4 @@
-import { Album, Track } from './types';
+import type { Album, Track } from './types';
 
 export const MOCK_ALBUMS: Album[] = [
   {
