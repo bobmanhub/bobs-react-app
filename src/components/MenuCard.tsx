@@ -17,7 +17,7 @@ export function MenuCard({ pizza, onAddToCart }: MenuCardProps) {
       <div className="p-4">
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-lg font-semibold">{pizza.name}</h3>
-          <span className="text-orange-600 font-bold">${pizza.price.toFixed(2)}</span>
+          <span className="text-orange-600 font-bold">${typeof pizza.price === 'number' ? pizza.price.toFixed(2) : '0.00'}</span>
         </div>
         <p className="text-gray-600 text-sm mb-3">{pizza.description}</p>
         <div className="flex justify-between items-center">
